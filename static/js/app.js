@@ -7,13 +7,13 @@ function updateLabels() {
     const calledLabel = document.getElementById('called-label');
 
     if (nextEntry) {
-        nextLabel.textContent = `Следующий: ticket #${nextEntry.id}  (person ${nextEntry.person_id})`;
+        nextLabel.textContent = `Следующий, талон номер #${nextEntry.id}`;
     } else {
         nextLabel.textContent = 'Следующий: —';
     }
 
     if (currentCalled) {
-        calledLabel.textContent = `Текущий вызванный: ticket #${currentCalled.id}  (person ${currentCalled.person_id})`;
+        calledLabel.textContent = `Текущий вызванный, талон номер #${currentCalled.id}`;
     } else {
         calledLabel.textContent = 'Текущий вызванный: —';
     }

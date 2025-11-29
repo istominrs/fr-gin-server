@@ -11,7 +11,6 @@ import (
 )
 
 const (
-	CLIENT = "http://127.0.0.1:8080"
 	SERVER = "http://127.0.0.1:8080"
 )
 
@@ -55,7 +54,7 @@ func main() {
 	// API для отметки как обслуженного
 	router.POST("/api/done/:ticket_id", markDone)
 
-	if err := router.Run(":3000"); err != nil {
+	if err := router.Run("0.0.0.0:3000"); err != nil {
 		panic(err)
 	}
 }
@@ -102,28 +101,6 @@ func callNext(c *gin.Context) {
 	body, _ := io.ReadAll(serverResp.Body)
 	var callResp CallNextResponse
 	json.Unmarshal(body, &callResp)
-
-	// Уведомляем клиента
-	if callResp.Entry != nil {
-		notifyPayload := map[string]int{"ticket_id": callResp.Entry.ID}
-		payloadBytes, _ := json.Marshal(notifyPayload)
-
-		clientResp, err := http.Post(
-			fmt.Sprintf("%s/queue/call_next", CLIENT),
-			"application/json",
-			io.NopCloser(bytes.NewReader(payloadBytes)),
-		)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Client notify failed: %v", err)})
-			return
-		}
-		defer clientResp.Body.Close()
-
-		if clientResp.StatusCode != http.StatusOK {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Client notify failed"})
-			return
-		}
-	}
 
 	c.JSON(http.StatusOK, callResp)
 }
